@@ -23,8 +23,12 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Determine access to the MPC toolbox
 
-if license('test','MPC_Toolbox');    solveUse = 'mpc';
-else;                                solveUse = 'quadprog';
+if license('test','MPC_Toolbox');    
+    solveUse = 'mpc';
+    disp('MCP found...')
+else;                                
+    solveUse = 'quadprog';
+    disp('using quadprog')
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

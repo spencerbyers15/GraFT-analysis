@@ -21,8 +21,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % This first block sets up the basic parameters 
 
-saveDir  = '.';                                                            % Set the path where the output should be saved to
-usePatch = true;                                                           % Select if patchGraFT or regular GraFT should be used. For bigger field-of-views (>150 pix X 150 pix), patchGraFT is recommended
+saveDir  = 'C:\Users\byers\Desktop';                                                            % Set the path where the output should be saved to
+usePatch = false;                                                           % Select if patchGraFT or regular GraFT should be used. For bigger field-of-views (>150 pix X 150 pix), patchGraFT is recommended
 
 params.lambda    = 0.7;                                                   % Sparsity parameter
 params.lamForb   = 0.2;                                                    % parameter to control how much to weigh extra time-traces
@@ -30,8 +30,8 @@ params.lamCorr   = 0.1;                                                    % Par
 params.n_dict    = 15;                                                     % Choose how many components (per patch) will be initialized. Note: the final number of coefficients may be less than this due to lack of data variance and merging of components.
 params.patchSize = 50;                                                     % Choose the size of the patches to break up the image into (squares with patchSize pixels on each side)
 
-Xsel = 151:350;                                                            % Can sub-select a portion of the full FOV to test on a small section before running on the full dataset
-Ysel = 101:300;                                                            % ...
+Xsel = [];                                                            % Can sub-select a portion of the full FOV to test on a small section before running on the full dataset
+Ysel = [];                                                            % ...
 params.motion_correct = false;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -50,8 +50,7 @@ RandStream.setGlobalStream(RandStream('mt19937ar'));                       % Set
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Download and load NeuroFinder data
 
-fprintf('Loading Neurofinder data...\n')
-data.nam = 'neurofinder.02.00';                                            % Create the name of the data to check for
+data.nam = 'C:\Users\byers\Desktop\';                                            % Create the name of the data to check for
 if ~exist(data.nam,'file')                                                 % download file if it doesn't exist in the directory
     fprintf('Neurofinder data not detected, downloading data now...\n')
     url         = 'https://s3.amazonaws.com/neuro.datasets/challenges/neurofinder/neurofinder.02.00.zip';
@@ -61,8 +60,8 @@ if ~exist(data.nam,'file')                                                 % dow
     clear url filename                                                     % Clear un-needed variables
 end
  
-data.dirname = fullfile(data.nam, 'images');                               % Get the directory name
-data.files   = dir(fullfile(data.dirname,'*.tiff'));                       % Get all of  the filenames (look for tiff files)
+data.dirname = fullfile(data.nam, 'graft_test');                               % Get the directory name
+data.files   = dir(fullfile(data.dirname,'*.tif'));                       % Get all of  the filenames (look for tiff files)
 data.fname   = fullfile(data.dirname, data.files(1).name);                 % Create a full-file name to point to the first file (used to get movie sizes)
 data.Fsim    = imread(data.fname);                                         % Read in the first file
 data.Fsim    = zeros(size(data.Fsim,1),size(data.Fsim,2),...
@@ -119,7 +118,7 @@ fprintf('Setting up parameters...')
 params.lamCont       = 0.1;                                                % parameter to control how much to weigh the previous estimate (continuity term)
 params.grad_type     = 'full_ls_cor';                                      % type of dictionary update
 params.lamContStp    = 0.9;                                                % Decay rate of the continuation parameter
-params.plot          = true;                                              % Set whether to plot intermediary variables
+params.plot          = false;                                              % Set whether to plot intermediary variables
 params.create_memmap = false;                                              % 
 params.verbose       = 10;                                                  % Level of verbose output 
 params.normalizeSpatial = true;

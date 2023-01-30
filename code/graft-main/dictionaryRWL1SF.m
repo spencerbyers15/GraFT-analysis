@@ -20,7 +20,6 @@ end
 if nargin > 6; solveUse = varargin{2};
 else;          solveUse = 'quadprog';
 end
-solveUse
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Set Initializations
 if size(mov,3)>1
@@ -28,6 +27,7 @@ if size(mov,3)>1
     mov = reshape(mov,[],size(mov,3));                                     % Reshape the movie to an appropriate size
 end
 [n_pts,~,nd] = getDataSizes(mov,D);                                        % Get movie height, width, time-length and dictionary size
+disp(n_pts)
 corr_kern     = checkCorrKern(mov, corr_kern, verbose);                    % Check spatial smoothing kernel
 
 if nargin < 5 || isempty(S)
@@ -57,13 +57,15 @@ DTD = D.'*D; % Precompute the Hessian
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Run loop
-
+disp(params.numreps)
 for kk = 1:params.numreps
+    
     % Step 1: Update spike weights: S =  tau/(beta + |S| + |W*S|)
     S = double(S);
     if kk > 1
         verbPrint(params.verbose, 2, 'Evaluating E-step (coefficient weights).')% Optional verbose output (level 2)
         tau_mat = updateTauMat(S, corr_kern, beta, params, n_pts, nd);% Update the matrix of weights
+        disp(n_pts)
         verbPrint(params.verbose, 2, sprintf('Iteration %d weight update finished.\n',kk))% Optional verbose output (level 2)
     end
     verbPrint(verbose, 2, sprintf('Starting iteration %d inference.',kk))  % Some outputs
@@ -72,6 +74,7 @@ for kk = 1:params.numreps
     parfor ll = 1:n_pts                                                    % Loop through all the pixels
         switch likely_form                                                 % Find which noise function is selected
             case 'poisson'                                                 % Poisson noise --> use SPIRAL-TAP
+                
                 S(ll,:) = singlePoiNeuroInfer(tau_mat(ll,:), mov(ll,:),...
                                           D, maxiter, tolerance, verbose); % Perform column-wise Poisson de-mixing - currently calls SPIRAL-TAP
             case 'gaussian'                                                % Gaussian noise --> use a weighted LASSO
